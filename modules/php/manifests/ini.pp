@@ -4,7 +4,7 @@ define php::ini (
     $target   = 'extra.ini',
     $service  = $php::service
 ) {
-  file { "/etc/php5/conf.d/${target}":
+  file { "/etc/php5/apache2/conf.d/${target}":
     ensure  => 'present',
     content => template("php/${template}"),
     require => Package['php'],

@@ -9,7 +9,7 @@ file { '/etc/resolv.conf' :
 exec { 'apt-get update':
   command => 'apt-get update',
   path    => '/usr/bin/',
-  timeout => 60,
+  timeout => 0,
   tries   => 3,
 }
 
@@ -37,6 +37,10 @@ class { 'apache': }
 apache::dotconf { 'custom':
   content => 'EnableSendfile Off',
 }
+file { '/etc/apache2/sites-enabled/000-default.conf':
+  ensure => absent,
+  notify => Service['apache2']
+}
 
 apache::module { 'rewrite': }
 
@@ -46,7 +50,7 @@ apache::vhost { 'sf2-vagrant.dev':
   docroot       => '/var/www/web',
   port          => '80',
   env_variables => [],
-  priority      => '1',
+  priority      => '20',
 }
 
 apt::ppa { 'ppa:ondrej/php5':
@@ -100,11 +104,6 @@ php::ini { 'php':
   target  => 'php.ini',
   service => 'apache',
 }
-php::ini { 'custom':
-  value   => ['display_errors = On', 'error_reporting = -1'],
-  target  => 'custom.ini',
-  service => 'apache',
-}
 
 class { 'mysql':
   root_password => 'sf2-vagrant',
@@ -132,3 +131,8 @@ apache::vhost { 'phpmyadmin':
   require     => Class['phpmyadmin'],
 }
 
+file {'/etc/apache2/conf-enabled/phpmyadmin.conf':
+  ensure => link,
+  target => '/etc/phpmyadmin/apache.conf',
+  require     => [ Class['phpmyadmin'], Class['apache']]
+}

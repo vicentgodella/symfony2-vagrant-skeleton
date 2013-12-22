@@ -246,7 +246,7 @@ class php (
     require => Package['php'],
     source  => $php::manage_file_source,
     content => $php::manage_file_content,
-    replace => $php::manage_file_replace,
+      replace => $php::manage_file_replace,
     audit   => $php::manage_audit,
   }
 
